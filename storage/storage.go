@@ -71,11 +71,22 @@ func (s *Storage) GetIndex(ctx context.Context) ([]string, error) {
 }
 func (s *Storage) InsertBook(ctx context.Context, title, author string) (int, error) {
 	var id int
-	sql := `INSERT INTO libradis (title,author) VALUES ($1,$2) RETURNING id`
-	err := s.db.QueryRow(ctx, sql, title, author).Scan(&id)
+	tx, err := s.db.Begin(ctx)
 	if err != nil {
 		return 0, err
 	}
+
+	sql := `INSERT INTO libradis (title,author) VALUES ($1,$2) RETURNING id`
+	err = s.db.QueryRow(ctx, sql, title, author).Scan(&id)
+	if err != nil {
+		tx.Rollback(ctx)
+		return 0, err
+	}
+	err = tx.Commit(ctx)
+	if err != nil {
+		return 0, err
+	}
+
 	strid := strconv.Itoa(id)
 	err = s.rdb.HSet(ctx, strid, map[string]interface{}{
 		"author": author,
