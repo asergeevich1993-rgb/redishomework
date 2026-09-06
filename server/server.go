@@ -20,6 +20,7 @@ func NewServer(hh *handlers.HttpHandlers) *HTTPServer {
 func (hs *HTTPServer) StartServer() {
 	rounter := http.NewServeMux()
 	rounter.HandleFunc("POST /book", hs.handlers.HandleCreateBook)
+	rounter.HandleFunc("GET /indexes", hs.handlers.HandleGetIndex)
 	rounter.HandleFunc("GET /book/{id}", hs.handlers.HandleGetBook)
 	rounter.HandleFunc("POST /finish", hs.handlers.HandleFinis)
 

@@ -41,7 +41,33 @@ func (s *Storage) CreateTable(ctx context.Context) error {
 		panic(err)
 	}
 	fmt.Println("База создана : ", tag)
+	indexSQL := `CREATE INDEX IF NOT EXISTS idx_books_author ON libradis(author)`
+	if _, err := s.db.Exec(ctx, indexSQL); err != nil {
+		return err
+	}
+
 	return nil
+}
+func (s *Storage) GetIndex(ctx context.Context) ([]string, error) {
+	sql := `SELECT indexname FROM pg_indexes WHERE tablename='libradis'`
+	rows, err := s.db.Query(ctx, sql)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var indexes []string
+
+	for rows.Next() {
+		var index string
+		if err := rows.Scan(&index); err != nil {
+			return nil, err
+		}
+		indexes = append(indexes, index)
+
+	}
+	return indexes, rows.Err()
+
 }
 func (s *Storage) InsertBook(ctx context.Context, title, author string) (int, error) {
 	var id int
@@ -58,7 +84,7 @@ func (s *Storage) InsertBook(ctx context.Context, title, author string) (int, er
 	if err != nil {
 		return 0, err
 	}
-	s.rdb.Expire(ctx, strid, 5*time.Second)
+	s.rdb.Expire(ctx, strid, 20*time.Second)
 	return id, nil
 }
 
@@ -66,18 +92,17 @@ func (s *Storage) GetBook(ctx context.Context, id int) (Book, string, error) {
 
 	strid := strconv.Itoa(id)
 	data, err := s.rdb.HGetAll(ctx, strid).Result()
-	if err == nil {
-		title := data["title"]
-		author := data["author"]
-		return Book{
-			ID:     id,
-			Title:  title,
-			Author: author,
-		}, " Redis ", nil
-	}
-	if err != redis.Nil {
+	if err != nil {
 		return Book{}, "", err
 	}
+	if len(data) > 0 {
+		return Book{
+			ID:     id,
+			Title:  data["title"],
+			Author: data["author"],
+		}, "redis", nil
+	}
+
 	var book Book
 	sql := `SELECT id,title,author FROM libradis WHERE id = $1`
 	err = s.db.QueryRow(ctx, sql, id).Scan(&book.ID, &book.Title, &book.Author)

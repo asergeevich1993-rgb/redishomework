@@ -21,6 +21,17 @@ func NewHandler(stor *storage.Storage, cancel context.CancelFunc, ctx context.Co
 		ctx:     ctx,
 	}
 }
+func (hh *HttpHandlers) HandleGetIndex(w http.ResponseWriter, r *http.Request) {
+	indexes, err := hh.storage.GetIndex(hh.ctx)
+	if err != nil {
+		writeError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+	json.NewEncoder(w).Encode(indexes)
+
+}
 
 func (hh *HttpHandlers) HandleCreateBook(w http.ResponseWriter, r *http.Request) {
 	var dto DTOBook
