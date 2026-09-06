@@ -77,7 +77,7 @@ func (s *Storage) InsertBook(ctx context.Context, title, author string) (int, er
 	}
 
 	sql := `INSERT INTO libradis (title,author) VALUES ($1,$2) RETURNING id`
-	err = s.db.QueryRow(ctx, sql, title, author).Scan(&id)
+	err = tx.QueryRow(ctx, sql, title, author).Scan(&id)
 	if err != nil {
 		tx.Rollback(ctx)
 		return 0, err
@@ -121,5 +121,28 @@ func (s *Storage) GetBook(ctx context.Context, id int) (Book, string, error) {
 		return Book{}, "", err
 	}
 	return book, "postgres", nil
+
+}
+func (s *Storage) UpdateBook(ctx context.Context, id int, title, author string) (int, error) {
+
+	tx, err := s.db.Begin(ctx)
+	if err != nil {
+		return 0, err
+	}
+	var existid int
+	sql := `SELECT id FROM libradis WHERE id=$1 FOR UPDATE`
+	err = tx.QueryRow(ctx, sql, id).Scan(&existid)
+	if err != nil {
+		tx.Rollback(ctx)
+		return 0, err
+	}
+	var intid int
+	sql2 := `UPDATE libradis SET title=$1,author=$2 WHERE id=$3 RETURNING id`
+	err = tx.QueryRow(ctx, sql2, title, author, id).Scan(&intid)
+	if err != nil {
+		tx.Rollback(ctx)
+		return 0, err
+	}
+	return intid, tx.Commit(ctx)
 
 }
