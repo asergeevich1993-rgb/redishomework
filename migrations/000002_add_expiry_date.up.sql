@@ -1,0 +1,5 @@
+ALTER TABLE products
+    ADD COLUMN expiry_date DATE;
+ALTER TABLE products
+    ALTER COLUMN name SET NOT NULL,
+    ALTER COLUMN price SET NOT NULL;

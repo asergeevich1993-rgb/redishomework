@@ -1,0 +1,6 @@
+ALTER TABLE products
+    DROP COLUMN IF EXISTS expiry_date;
+
+ALTER TABLE products
+    ALTER COLUMN name DROP NOT NULL,
+    ALTER COLUMN price DROP NOT NULL;
