@@ -1,2 +1,2 @@
 ALTER TABLE products
-DROP CONSTRAINT IF EXISTS products_name;
+DROP CONSTRAINT IF EXISTS title_u;

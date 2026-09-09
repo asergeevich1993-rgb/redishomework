@@ -2,7 +2,6 @@ package storage
 
 import (
 	"context"
-	"fmt"
 	"strconv"
 	"time"
 
@@ -30,17 +29,8 @@ func NewConnectDB(ctx context.Context, dsn string, redisAddr string) (*Storage, 
 	}, nil
 }
 
-func (s *Storage) CreateTable(ctx context.Context) error {
-	sql := `CREATE TABLE IF NOT EXISTS libradis(
- id SERIAL PRIMARY KEY,
- title VARCHAR(200) NOT NULL,
- author VARCHAR(100) NOT NULL)`
+func (s *Storage) CreateIndex(ctx context.Context) error {
 
-	tag, err := s.db.Exec(ctx, sql)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("База создана : ", tag)
 	indexSQL := `CREATE INDEX IF NOT EXISTS idx_books_author ON libradis(author)`
 	if _, err := s.db.Exec(ctx, indexSQL); err != nil {
 		return err

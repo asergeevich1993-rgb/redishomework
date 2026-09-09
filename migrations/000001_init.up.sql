@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS products (
+CREATE TABLE IF NOT EXISTS booksDB (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(200),
-    price DECIMAL
+    title VARCHAR(200),
+    author VARCHAR(200)
 );

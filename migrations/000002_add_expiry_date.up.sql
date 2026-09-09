@@ -1,5 +1,5 @@
 ALTER TABLE products
-    ADD COLUMN expiry_date DATE;
+    ADD COLUMN read_at TIMESTAMPTZ;
 ALTER TABLE products
-    ALTER COLUMN name SET NOT NULL,
-    ALTER COLUMN price SET NOT NULL;
+    ALTER COLUMN title SET NOT NULL,
+    ALTER COLUMN author SET NOT NULL;
