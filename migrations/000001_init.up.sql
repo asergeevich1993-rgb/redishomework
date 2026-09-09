@@ -1,0 +1,5 @@
+CREATE TABLE IF NOT EXISTS booksDB (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(200),
+    author VARCHAR(200)
+);
