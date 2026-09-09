@@ -1,4 +1,4 @@
-ALTER TABLE products
+ALTER TABLE booksDB
     ADD COLUMN read_at TIMESTAMPTZ;
 ALTER TABLE products
     ALTER COLUMN title SET NOT NULL,
