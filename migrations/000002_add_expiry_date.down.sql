@@ -1,6 +1,6 @@
-ALTER TABLE booksDB
+ALTER TABLE libradis
     DROP COLUMN IF EXISTS expiry_date;
 
-ALTER TABLE booksDB
+ALTER TABLE libradis
     ALTER COLUMN title DROP NOT NULL,
     ALTER COLUMN author DROP NOT NULL;

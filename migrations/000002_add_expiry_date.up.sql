@@ -1,5 +1,5 @@
-ALTER TABLE booksDB
+ALTER TABLE libradis
     ADD COLUMN read_at TIMESTAMPTZ;
-ALTER TABLE products
+ALTER TABLE libradis
     ALTER COLUMN title SET NOT NULL,
     ALTER COLUMN author SET NOT NULL;

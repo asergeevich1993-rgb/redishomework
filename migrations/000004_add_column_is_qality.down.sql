@@ -1,2 +1,2 @@
-ALTER TABLE products
+ALTER TABLE libradis
 DROP COLUMN IF EXISTS is_quality;
