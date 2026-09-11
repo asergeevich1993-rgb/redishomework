@@ -1,2 +1,4 @@
-make migrate-up
+
 make run
+
+make migrate-up
